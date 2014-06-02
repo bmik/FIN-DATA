@@ -1,0 +1,17 @@
+﻿insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Ala', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
+insert into findata.test_entity (col1, col2) values('Makota', 'Makota');
