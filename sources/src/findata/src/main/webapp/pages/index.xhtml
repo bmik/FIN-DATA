@@ -6,16 +6,22 @@
 <h:head>
 	<title>#{msg['common.project.title']}</title>
 	<h:outputStylesheet library="css" name="normalize.css" />
-	<h:outputStylesheet library="css" name="main.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="main.css" />
 </h:head>
 
 <h:body>
 	<h:form>
+	
+		<p:inputText value="#{temp}" />
+		
+		<p:commandButton update="@form" value="bla bla">
+		
+		</p:commandButton>
 		<h4>
-			<h:outputText value="#{testBean.text}" />
+			<h:outputText value="#{testBean.getStockName(temp)}" />
 		</h4>
-		<p:commandButton update="@form" action="#{testBean.addEntity}" value="dodaj" />
 	</h:form>
+	
 </h:body>
 
 </html>

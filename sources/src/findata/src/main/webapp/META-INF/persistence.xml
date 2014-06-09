@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence">
-  <persistence-unit name="mainPU" transaction-type="JTA">
-    <provider>org.hibernate.ejb.HibernatePersistence</provider>
-    <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform"/>
-    </properties>
-  </persistence-unit>
+
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	
+	<persistence-unit name="findata" transaction-type="JTA">
+	
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>		
+		<jta-data-source>java:/findata</jta-data-source>
+		
+		<!-- <class>edu.uek.datamodeling.findata.model.entity.TestEntity</class> -->
+		<class>edu.uek.datamodeling.findata.model.db.entity.Stock</class>
+		<class>edu.uek.datamodeling.findata.model.db.entity.Company</class>
+		<class>edu.uek.datamodeling.findata.model.db.entity.Exchange</class>
+		
+		<!-- <class>edu.uek.datamodeling.findata.model.entity.</class> -->
+		
+		<properties>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.hbm2ddl.auto" value="validate" />
+			<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
+		</properties>
+		
+	</persistence-unit>
 </persistence>

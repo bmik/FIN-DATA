@@ -1,22 +1,18 @@
 ﻿-- FINDATA CREATE SCHEMA
 
-DROP SCHEMA IF EXISTS findata;
+DROP SCHEMA IF EXISTS findata CASCADE;
 CREATE SCHEMA findata AUTHORIZATION findata;
 
-CREATE SEQUENCE findata.stocks_id_seq INCREMENT 1 START 1;
-
 CREATE TABLE findata.stocks (
-	"id_stock" INT NOT NULL DEFAULT nextval('findata.stocks_id_seq'),
+	"id_stock" SERIAL,
 	"code" varchar(10) NOT NULL,
 	"full_name" varchar(255),
 	PRIMARY KEY ("id_stock")
 );
 
 
-CREATE SEQUENCE findata.companies_id_seq INCREMENT 1 START 1;
-
 CREATE TABLE findata.companies (
-	"id_company" INT NOT NULL DEFAULT nextval('findata.companies_id_seq'),
+	"id_company" SERIAL,
 	"stock_id" INT NOT NULL,
 	"code" varchar(10) NOT NULL,
 	"full_name" varchar(255) NOT NULL,
@@ -25,14 +21,20 @@ CREATE TABLE findata.companies (
 
 ALTER TABLE findata.companies ADD CONSTRAINT company_stock FOREIGN KEY (stock_id) REFERENCES findata.stocks (id_stock);
 
-
-CREATE SEQUENCE findata.quotations_id_seq INCREMENT 1 START 1;
-
-CREATE TABLE findata.quotations (
-	"id_quotation" INT NOT NULL DEFAULT nextval('findata.quotations_id_seq'),
+CREATE TABLE findata.exchanges (
+	"id_exchange" SERIAL,
 	"company_id" INT NOT NULL,
--- dodać kolumny z notowaniami
-	PRIMARY KEY ("id_quotation")
+	"date" TIMESTAMP NOT NULL,
+	"highest_value" REAL,
+	"lowest_value" REAL,
+	"closing_value" REAL,
+	"volume_value" REAL,
+	"change_value" REAL,
+	PRIMARY KEY ("id_exchange")
 );
 
-ALTER TABLE findata.quotations ADD CONSTRAINT quotation_company FOREIGN KEY (company_id) REFERENCES findata.companies (id_company);
+ALTER TABLE findata.exchanges ADD CONSTRAINT exchange_company FOREIGN KEY (company_id) REFERENCES findata.companies (id_company);
+
+GRANT ALL PRIVILEGES ON                  SCHEMA findata TO findata;
+GRANT ALL PRIVILEGES ON ALL TABLES    IN SCHEMA findata TO findata;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA findata TO findata;
