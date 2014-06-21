@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:p="http://primefaces.org/ui" >
-	
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
 <h:head>
 	<title>#{msg['common.project.title']}</title>
 	<h:outputStylesheet library="css" name="normalize.css" />
@@ -10,18 +11,378 @@
 </h:head>
 
 <h:body>
-	<h:form>
+
+<div id="containter">
+
+	<p:ajaxStatus onstart="PF('ajaxStatusDialog').show();"
+		onsuccess="PF('ajaxStatusDialog').hide();" />
+
+	<p:dialog modal="true" widgetVar="ajaxStatusDialog" header="#{msg['ajax.status_value']}" draggable="false"
+		closable="false" resizable="false">
+		<h:graphicImage library="img" name="loader.gif" />
+	</p:dialog>
 	
-		<p:inputText value="#{temp}" />
+	
+	<div id="header" />
+	
+	<div id="content">
 		
-		<p:commandButton update="@form" value="bla bla">
+	<h:form>
+
+		<p:panel>
+
+			<p:outputLabel for="chooseMethod"
+				value="Wybierz metodę pobrania danych" />
+			<p:selectOneRadio id="chooseMethod" value="#{viewModel.processMethod}" styleClass="radio-select-method">
+				<f:selectItem itemLabel="Cały proces" itemValue="wholeProcess" />
+				<f:selectItem itemLabel="Wszystko osobno" itemValue="separateProcess" />
+				<p:ajax update="inner-content" />
+			</p:selectOneRadio>
+			
+			<p:outputPanel id="inner-content">
+				
+				<p:outputPanel rendered="#{viewModel.processMethod == 'wholeProcess'}" 
+					styleClass="all-at-once">
+				
+					<p:panel styleClass="buttons-container">
+						<p:commandButton value="EXTRACT" action="#{viewController.doETL}" styleClass="action-button"
+							update="@form" />
+					</p:panel>
+					
+					<p:panel styleClass="reset-button-panel">
+						<p:commandButton value="Reset" action="#{viewController.reset}" update="@form" />
+					</p:panel>
+					
+					<div class="clear:both" />
+					
+					<p:panel styleClass="results-panel" rendered="#{viewModel.resultsPanelRendered}">
+					
+						<p:outputPanel rendered="#{not empty viewModel.updatedStockList}" styleClass="new-stocks-panel">
+							
+							<h:outputText value="Dodano nowe giełdy (#{viewModel.updatedStockList.size()})" />
+							<p:commandLink value="Pokaż" update="@(.new-stocks-panel)" actionListener="#{viewController.setNewStocksTableRendered(true)}" 
+								rendered="#{not viewModel.newStocksTableRendered}" />
+							<p:commandLink value="Ukryj" update="@(.new-stocks-panel)" actionListener="#{viewController.setNewStocksTableRendered(false)}" 
+								rendered="#{viewModel.newStocksTableRendered}" />
+					
+							<p:dataTable var="stock" value="#{viewModel.updatedStockList}" styleClass="updated-stocks-table"
+								rendered="#{viewModel.newStocksTableRendered}" >
+								<f:facet name="header">Nowe giełdy</f:facet>
+								<p:column headerText="Kod">
+									#{stock.code}
+								</p:column>
+								<p:column headerText="Nazwa">
+									#{stock.fullName}
+								</p:column>
+							</p:dataTable>
+							
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{not empty viewModel.updatedCompanyList}" styleClass="new-company-panel">
+						
+							<h:outputText value="Dodano nowe spółki (#{viewModel.updatedCompanyList.size()})" />
+							<p:commandLink value="Pokaż" update="@(.new-company-panel)" actionListener="#{viewController.setNewCompaniesTableRendered(true)}" 
+								rendered="#{not viewModel.newCompaniesTableRendered}" />
+							<p:commandLink value="Ukryj" update="@(.new-company-panel)" actionListener="#{viewController.setNewCompaniesTableRendered(false)}" 
+								rendered="#{viewModel.newCompaniesTableRendered}" />
+						
+							<p:dataTable var="company" value="#{viewModel.updatedCompanyList}" styleClass="updated-company-table"
+								paginator="true" rows="10" 
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+	                			rowsPerPageTemplate="10,50,100" paginatorPosition="bottom"
+	                			rendered="#{viewModel.newCompaniesTableRendered}">
+	                			<f:facet name="header">Nowe spółki</f:facet>
+	                			<p:column headerText="Kod giełdy">
+	                				#{company.stock.code}
+	                			</p:column>
+								<p:column headerText="Kod">
+									#{company.code}
+								</p:column>
+								<p:column headerText="Nazwa">
+									#{company.fullName}
+								</p:column>
+							</p:dataTable>
+							
+						</p:outputPanel>
+						
+						<p:dataTable var="exchange" value="#{viewModel.exchangeList}"
+							paginator="true" rows="10" 
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+	                		rowsPerPageTemplate="10,50,100" paginatorPosition="bottom">
+							
+							<f:facet name="header">Lista notowań giełdowych</f:facet>
+							
+							<p:column headerText="Spółka">
+								#{exchange.company.code}
+							</p:column>
+							<p:column headerText="Data">
+                				<h:outputText value="#{exchange.date}">
+                					<f:convertDateTime locale="pl_PL" pattern="dd.MM.yyyy"/>
+                				</h:outputText>
+                			</p:column>
+                			<p:column headerText="Kurs najwyższy">
+                				#{exchange.highestValue}
+                			</p:column>
+                			<p:column headerText="Kurs najniższy">
+                				#{exchange.lowestValue}
+                			</p:column>
+                			<p:column headerText="Kurs zamknięcia">
+                				#{exchange.closingValue}
+                			</p:column>
+                			<p:column headerText="Wolumin">
+                				#{exchange.volumeValue}
+                			</p:column>
+                			<p:column headerText="Zmiana">
+                				#{exchange.changeValue}
+                			</p:column>
+							
+						</p:dataTable>
+						
+					</p:panel>
+				
+				</p:outputPanel>
+	
+				<p:outputPanel layout="span" rendered="#{viewModel.processMethod == 'separateProcess'}" 
+					styleClass="one-by-one">
+				
+					<p:panel styleClass="buttons-container">
+					
+						<p:commandButton value="EXTRACT" action="#{viewController.extract}" styleClass="action-button"
+							update="@form" />
+						<p:commandButton value="TRANSFORM" action="#{viewController.transform}" styleClass="action-button"
+							update="@form" disabled="#{empty viewModel.findataEntityModelList}"/>
+						<p:commandButton value="LOAD" action="#{viewController.load}" styleClass="action-button"
+							update="@form" disabled="#{empty viewModel.transformedStockList or 
+														empty viewModel.transformedCompanyList or
+														empty viewModel.transformedExchangeList}"/>
+						
+					</p:panel>
+					
+					<p:panel styleClass="reset-button-panel">
+						<p:commandButton value="Reset" action="#{viewController.reset}" update="@form" />
+					</p:panel>
+					
+					<div class="clear:both" />
+					
+					<p:panel styleClass="extract-results" rendered="#{viewModel.extractPanelRendered}" closable="true">
 		
-		</p:commandButton>
-		<h4>
-			<h:outputText value="#{testBean.getStockName(temp)}" />
-		</h4>
+						<p:outputPanel layout="span" style="float:left">
+							<p:selectOneMenu value="#{viewModel.selectedStock}" styleClass="extract-results-filter">
+								<f:selectItem noSelectionOption="true" itemLabel="Wybierz giełdę"/>
+								<f:selectItems value="#{viewModel.stockCodes}" />
+								<p:ajax update="@(.extract-results)" />
+							</p:selectOneMenu>
+							
+							<p:selectOneMenu value="#{viewModel.selectedSymbol}" styleClass="extract-results-filter">
+								<f:selectItem noSelectionOption="true" itemLabel="Wybierz literę"/>
+								<f:selectItems value="#{viewModel.symbols}"/>
+								<p:ajax update="@(.extract-result-table)" />
+							</p:selectOneMenu>
+						</p:outputPanel>
+						
+						<p:outputPanel layout="span" styleClass="extract-results-main">
+							<h:outputText value="Pełna nazwa: " styleClass="label" rendered="#{viewController.getStockFullName(viewModel.selectedStock) != null}"/>
+							<h:outputText value="#{viewController.getStockFullName(viewModel.selectedStock)}" />
+							<h:outputText value="Data: " styleClass="label"/>
+							<h:outputText value="#{viewController.date}">
+								<f:convertDateTime locale="pl_PL" pattern="dd-mm-yyyy"/>
+							</h:outputText>
+						</p:outputPanel>
+						
+						<div style="clear:both" />
+						
+						<p:outputPanel styleClass="extract-result-table">
+						
+							<p:dataTable var="item" id="results" value="#{viewController.getCompaniesExchangesList(viewModel.selectedStock,viewModel.selectedSymbol)}">
+								<p:column headerText="Kod" >
+									#{item.code}
+								</p:column>
+								<p:column headerText="Nazwa" >
+									#{item.name}
+								</p:column>
+								<p:column headerText="najwyzszy" >
+									#{item.high}
+								</p:column>
+								<p:column headerText="najnizszy" >
+									#{item.low}
+								</p:column>
+								<p:column headerText="zakmniecia" >
+									#{item.close}
+								</p:column>
+								<p:column headerText="wolumin" >
+									#{item.volume}
+								</p:column>
+								<p:column headerText="zmiana" >
+									#{item.change}
+								</p:column>
+							</p:dataTable>
+							
+						</p:outputPanel>
+					
+					</p:panel>
+
+					<p:panel styleClass="transform-results" rendered="#{viewModel.transformPanelRendered}">
+					
+						<p:dataTable var="stock" value="#{viewModel.transformedStockList}" style="width: 48%;float: left">
+							<f:facet name="header">Giełdy</f:facet>
+							<p:column headerText="Kod">
+								#{stock.code}
+							</p:column>
+							<p:column headerText="Nazwa">
+								#{stock.fullName}
+							</p:column>
+						</p:dataTable>
+						
+						<p:dataTable var="company" value="#{viewModel.transformedCompanyList}" style="width: 48%;float: right"
+							paginator="true" rows="10" 
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                			rowsPerPageTemplate="10,50,100" paginatorPosition="bottom">
+                			<f:facet name="header">Spółki</f:facet>
+							<p:column headerText="Kod">
+								#{company.code}
+							</p:column>
+							<p:column headerText="Nazwa">
+								#{company.fullName}
+							</p:column>
+						</p:dataTable>
+						
+						<div style="clear:both" />
+						
+						<p:dataTable var="exchange" style="margin-top: 10px"
+							value="#{viewModel.transformedExchangeList}"
+							paginator="true" rows="10" 
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+                			rowsPerPageTemplate="10,50,100" paginatorPosition="bottom">
+                			<f:facet name="header">Notowania</f:facet>
+                			<p:column headerText="Data">
+                				<h:outputText value="#{exchange.date}">
+                					<f:convertDateTime locale="pl_PL" pattern="dd.MM.yyyy"/>
+                				</h:outputText>
+                			</p:column>
+                			<p:column headerText="Kurs najwyższy">
+                				#{exchange.highestValue}
+                			</p:column>
+                			<p:column headerText="Kurs najniższy">
+                				#{exchange.lowestValue}
+                			</p:column>
+                			<p:column headerText="Kurs zamknięcia">
+                				#{exchange.closingValue}
+                			</p:column>
+                			<p:column headerText="Wolumin">
+                				#{exchange.volumeValue}
+                			</p:column>
+                			<p:column headerText="Zmiana">
+                				#{exchange.changeValue}
+                			</p:column>
+                		</p:dataTable>
+					
+					</p:panel>
+				
+					<p:panel styleClass="load-results" rendered="#{viewModel.loadPanelRendered}">
+					
+						<p:outputPanel rendered="#{not empty viewModel.updatedStockList}" styleClass="new-stocks-panel">
+							
+							<h:outputText value="Dodano nowe giełdy (#{viewModel.updatedStockList.size()})" />
+							<p:commandLink value="Pokaż" update="@(.new-stocks-panel)" actionListener="#{viewController.setNewStocksTableRendered(true)}" 
+								rendered="#{not viewModel.newStocksTableRendered}" />
+							<p:commandLink value="Ukryj" update="@(.new-stocks-panel)" actionListener="#{viewController.setNewStocksTableRendered(false)}" 
+								rendered="#{viewModel.newStocksTableRendered}" />
+					
+							<p:dataTable var="stock" value="#{viewModel.updatedStockList}" styleClass="updated-stocks-table"
+								rendered="#{viewModel.newStocksTableRendered}" >
+								<f:facet name="header">Nowe giełdy</f:facet>
+								<p:column headerText="Kod">
+									#{stock.code}
+								</p:column>
+								<p:column headerText="Nazwa">
+									#{stock.fullName}
+								</p:column>
+							</p:dataTable>
+							
+						</p:outputPanel>
+						
+						<p:outputPanel rendered="#{not empty viewModel.updatedCompanyList}" styleClass="new-company-panel">
+						
+							<h:outputText value="Dodano nowe spółki (#{viewModel.updatedCompanyList.size()})" />
+							<p:commandLink value="Pokaż" update="@(.new-company-panel)" actionListener="#{viewController.setNewCompaniesTableRendered(true)}" 
+								rendered="#{not viewModel.newCompaniesTableRendered}" />
+							<p:commandLink value="Ukryj" update="@(.new-company-panel)" actionListener="#{viewController.setNewCompaniesTableRendered(false)}" 
+								rendered="#{viewModel.newCompaniesTableRendered}" />
+						
+							<p:dataTable var="company" value="#{viewModel.updatedCompanyList}" styleClass="updated-company-table"
+								paginator="true" rows="10" 
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+	                			rowsPerPageTemplate="10,50,100" paginatorPosition="bottom"
+	                			rendered="#{viewModel.newCompaniesTableRendered}">
+	                			<f:facet name="header">Nowe spółki</f:facet>
+	                			<p:column headerText="Kod giełdy">
+	                				#{company.stock.code}
+	                			</p:column>
+								<p:column headerText="Kod">
+									#{company.code}
+								</p:column>
+								<p:column headerText="Nazwa">
+									#{company.fullName}
+								</p:column>
+							</p:dataTable>
+							
+						</p:outputPanel>
+						
+						<p:dataTable var="exchange" value="#{viewModel.exchangeList}"
+							paginator="true" rows="10" 
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" 
+	                		rowsPerPageTemplate="10,50,100" paginatorPosition="bottom">
+							
+							<f:facet name="header">Lista notowań giełdowych</f:facet>
+							
+							<p:column headerText="Spółka">
+								#{exchange.company.code}
+							</p:column>
+							<p:column headerText="Data">
+                				<h:outputText value="#{exchange.date}">
+                					<f:convertDateTime locale="pl_PL" pattern="dd.MM.yyyy"/>
+                				</h:outputText>
+                			</p:column>
+                			<p:column headerText="Kurs najwyższy">
+                				#{exchange.highestValue}
+                			</p:column>
+                			<p:column headerText="Kurs najniższy">
+                				#{exchange.lowestValue}
+                			</p:column>
+                			<p:column headerText="Kurs zamknięcia">
+                				#{exchange.closingValue}
+                			</p:column>
+                			<p:column headerText="Wolumin">
+                				#{exchange.volumeValue}
+                			</p:column>
+                			<p:column headerText="Zmiana">
+                				#{exchange.changeValue}
+                			</p:column>
+							
+						</p:dataTable>
+					
+					</p:panel>
+					
+				</p:outputPanel>
+			</p:outputPanel>
+
+		</p:panel>
+
 	</h:form>
 	
+	</div>
+	
+ 	<div id="footer">
+	 		<h:outputLink value="http://www.uek.krakow.pl">
+	 			<p:graphicImage library="img" name="uek-logo.jpg" styleClass="logo"/>
+	 		</h:outputLink>
+	 		<h:outputLink value="http://www.informatyka.uek.krakow.pl/">
+	 			<p:graphicImage library="img" name="IS-logo.png" styleClass="logo"/>
+	 		</h:outputLink>
+ 	</div>
+ 	
+ 	</div>
+
 </h:body>
 
 </html>

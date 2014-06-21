@@ -1,4 +1,97 @@
 body {
-	width:1024px;
+	width:1000px;
 	margin: 0 auto;
+	color: #333;
+	font-size: 12px !important;
+}
+
+table {
+	font-size: 12px !important;
+}
+
+
+/* PAGE LAYOUT */
+#header {
+	width: 100%;
+	background-image: url("#{resource['img/stock-transfer-banner.jpg']}");
+	height:100px;
+}
+
+#container {
+	position: relative;
+	min-height: 100%;
+}
+
+#content {
+	margin: 0 auto;
+	margin-top: 15px;
+	min-height: 400px;
+}
+
+#footer {
+	width: 100%;
+	text-align: center;
+}
+
+.logo {
+	margin: 0 30px;
+	width:100px;
+}
+
+
+.radio-select-method {
+	margin: 10px 0;
+}
+
+.buttons-container {
+	margin-bottom: 10px;
+	float: left;
+}
+
+.reset-button-panel {
+	margin-bottom: 10px;
+	float: right:
+}
+
+.action-button {
+	margin-right:6px !important;
+}
+
+.extract-results-main {
+	float: right;
+}
+
+.extract-results-main .label {
+	font-weight: bold;
+	margin-left: 30px;
+}
+
+.extract-results-filter {
+	margin-right:6px !important;
+}
+
+.extract-result-table {
+	margin-top:10px;
+}
+
+
+/* LOAD */
+.updated-stocks-table .ui-widget {
+	border: 
+}
+
+
+/* PRIMEFACES COMPONENTS STYLES */
+.ui.widget-content, .ui-widget {
+	color: #333 !important;
+	font-size: 12px !important;
+}
+
+.ui-radiobutton {
+	margin-right: 10px !important;
+}
+
+.ui-selectoneradio label {
+	margin-top: 2px;
+	margin-right: 20px;
 }

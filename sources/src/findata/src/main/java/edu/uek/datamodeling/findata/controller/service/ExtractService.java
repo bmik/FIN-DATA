@@ -1,14 +1,20 @@
 package edu.uek.datamodeling.findata.controller.service;
 
-import edu.uek.datamodeling.findata.controller.implementation.extract.ExtractRequest;
-import edu.uek.datamodeling.findata.controller.implementation.extract.ExtractResponse;
-import edu.uek.datamodeling.findata.controller.implementation.extract.ExtractStockRequest;
-import edu.uek.datamodeling.findata.controller.implementation.extract.ExtractStockResponse;
+import edu.uek.datamodeling.findata.controller.implementation.extract.request.ExtractRequest;
+import edu.uek.datamodeling.findata.controller.implementation.extract.response.ExtractResponse;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface ExtractService.
+ */
 public interface ExtractService {
 
-	// General extract process
+	/**
+	 * Do extract.
+	 *
+	 * @param request the request
+	 * @return the extract response
+	 */
 	public ExtractResponse doExtract(ExtractRequest request);
-	public ExtractStockResponse extractStock(ExtractStockRequest request);
 	
 }
