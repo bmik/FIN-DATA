@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -25,48 +28,28 @@ import edu.uek.datamodeling.findata.model.db.entity.Stock;
 import edu.uek.datamodeling.findata.model.findataimporter.model.FindataCompanyExchangeModel;
 import edu.uek.datamodeling.findata.model.findataimporter.model.FindataExchangeEntityModel;
 
-// TODO: Auto-generated Javadoc
-/**
- * Kontroler widoku. Składa się z metod ktore wywołują akcje dla poszczegolnych przyciskow na stronie index.xhtml.
- *
- */
+
 @Controller("viewController")
 @Scope("prototype")
 public class ViewController implements Serializable {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5317413022036931996L;
 	
-	/** The Constant log. */
 	private static final Logger log = Logger.getLogger(ViewController.class);
 
-	/**
-	 * Wstrzyknięty obiekt usługi "Extract" z modułu "Controller".
-	 */
 	@Autowired
 	private ExtractService extractService;
-	/**
-	 * Wstrzyknięty obiekt usługi "Transform" z modułu "Controller".
-	 */
 	@Autowired
 	private TransformService transformService;
-	/**
-	 * Wstrzyknięty obiekt usługi "Load" z moduły "Controller".
-	 */
 	@Autowired
 	private LoadService loadService;
 	
-	/**
-	 * Wstrzyknięty obiekt będący modelem widoku.
-	 */
 	@Autowired
 	private ViewModel model;
 	
-	/**
-	 * Metoda, ktora wywoluje wszystkie usługi procesow ETL w porządanej kolejności.
-	 */
 	public void doETL() {
 		
+		log.info(String.format("Attempting to run ETL process..."));
 		log.info(String.format("Preparing to extract..."));
 		
 		ExtractRequest extractRequest = new ExtractRequest(model.getStockCodes(), model.getSymbols());
@@ -78,8 +61,8 @@ public class ViewController implements Serializable {
 			findataExchangeEntityModelList = extractResponse.getFindataExchangeEntityModelList();
 			log.info(String.format("Successfully extracted findata entities"));
 		} else {
-			log.error(String.format("Unable to extract findata entities"));
-			// TODO faces message
+			log.error(String.format("Unable to extract findata entities - %s", extractResponse.getDesc()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wystąpił problem podczas procesu EXTRACT, spróbuj ponownie", null));
 			return;
 		}
 		
@@ -98,8 +81,8 @@ public class ViewController implements Serializable {
 			transformedExchangeList = transformResponse.getExchangeList();
 			log.info("Successfully transformed findata entites into DB entities");
 		} else {
-			log.error(String.format("Unable to transform findata entities into DB entities"));
-			// TODO faces message
+			log.error(String.format("Unable to transform findata entities into DB entities - %s", transformResponse.getDesc()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wystąpił problem podczas procesu TRANSFORM, spróbuj ponownie", null));
 			return;
 		}
 		
@@ -118,18 +101,17 @@ public class ViewController implements Serializable {
 			
 			log.info(String.format("Successfully loaded data into DB"));
 		} else {
-			log.error(String.format("Unable to load data into DB"));
-			// TODO faces message
+			log.error(String.format("Unable to load data into DB - %s", loadResponse.getDesc()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wystąpił problem podczas procesu LOAD, spróbuj ponownie", null));
 			return;
 		}
+		
+		log.info(String.format("ETL process finished with success!"));
 		
 		model.setResultsPanelRendered(true);
 		
 	}
 
-	/**
-	 * Metoda, ktora wywołuje usługę "Extract" i ustawia zwrocone wartości w modelu widoku.
-	 */
 	public void extract() {
 		
 		log.info(String.format("Preparing to extract..."));
@@ -146,15 +128,12 @@ public class ViewController implements Serializable {
 			
 			log.info(String.format("Successfully extracted findata entities"));
 		} else {
-			log.error(String.format("Unable to extract findata entities"));
-			// TODO faces message
+			log.error(String.format("Unable to extract findata entities - %s", response.getDesc()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wystąpił problem podczas procesu EXTRACT, spróbuj ponownie", null));
 		}
 		
 	}
 	
-	/**
-	 * Metoda, ktora wywołuje usługę "Transform" i ustawia zwrocone wartości w modelu widoku.
-	 */
 	public void transform() {
 		
 		log.info(String.format("Preparing to transform..."));
@@ -173,15 +152,12 @@ public class ViewController implements Serializable {
 			
 			log.info("Successfully transformed findata entites into DB entities");
 		} else {
-			log.error(String.format("Unable to transform findata entities into DB entities"));
-			// TODO faces message
+			log.error(String.format("Unable to transform findata entities into DB entities - %s", response.getDesc()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wystąpił problem podczas procesu TRAMSFORM, spróbuj ponownie", null));
 		}
 		
 	}
 	
-	/**
-	 * Metoda, ktora wywołuje usługę "Load" i ustawia zwrocone wartości w modelu widoku.
-	 */
 	public void load() {
 		
 		log.info(String.format("Preparing to load..."));
@@ -203,19 +179,12 @@ public class ViewController implements Serializable {
 			
 			log.info(String.format("Successfully loaded data into DB"));
 		} else {
-			log.error(String.format("Unable to load data into DB"));
-			// TODO faces message
+			log.error(String.format("Unable to load data into DB - %s", response.getDesc()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wystąpił problem podczas procesu LOAD, spróbuj ponownie", null));
 		}
 		
 	}
 	
-	/**
-	 * Metoda, ktora zwraca liste encji z kroku "Extract" w zależności od wybranej giełdy oraz pierwszej litery spolki.
-	 *
-	 * @param stockCode the stock code
-	 * @param symbol the symbol
-	 * @return the companies exchanges list
-	 */
 	public List<FindataCompanyExchangeModel> getCompaniesExchangesList(String stockCode, String symbol) {
 		
 		for (FindataExchangeEntityModel stock : model.getFindataEntityModelList()) {
@@ -233,12 +202,6 @@ public class ViewController implements Serializable {
 		return null;
 	}
 	
-	/**
-	 * Metoda, ktora zwraca pełną nazwę giełdy na podstawie podanego kodu.
-	 *
-	 * @param stockCode the stock code
-	 * @return the stock full name
-	 */
 	public String getStockFullName(String stockCode) {
 		for (FindataExchangeEntityModel stock : model.getFindataEntityModelList()) {
 			if (stockCode.equals(stock.getStockCode())) {
@@ -248,11 +211,6 @@ public class ViewController implements Serializable {
 		return null;
 	}
 	
-	/**
-	 * Metoda, ktora zwraca Datę uzyskaną w procesie "Extract".
-	 *
-	 * @return the date
-	 */
 	public String getDate() {
 		if (model.getFindataEntityModelList() != null) {
 			return model.getFindataEntityModelList().get(0).getDate();
@@ -260,35 +218,30 @@ public class ViewController implements Serializable {
 		return null;
 	}
 	
-	
-	/**
-	 * *********************
-	 * METODY POMOCNICZE
-	 * *********************.
-	 *
-	 * @param isRendered the new new stocks table rendered
-	 */
-	
 	public void setNewStocksTableRendered(boolean isRendered) {
 		model.setNewStocksTableRendered(isRendered);
 	}
 	
-	/**
-	 * Sets the new companies table rendered.
-	 *
-	 * @param isRendered the new new companies table rendered
-	 */
 	public void setNewCompaniesTableRendered(boolean isRendered) {
 		model.setNewCompaniesTableRendered(isRendered);
 	}
 	
-	/**
-	 * Reset.
-	 */
 	public void reset() {
-		String processMethod = model.getProcessMethod();
-		model = new ViewModel();
-		model.setProcessMethod(processMethod);
+		model.setExchangeList(null);
+		model.setExtractPanelRendered(false);
+		model.setFindataEntityModelList(null);
+		model.setLoadPanelRendered(false);
+		model.setNewCompaniesTableRendered(false);
+		model.setNewStocksTableRendered(false);
+		model.setResultsPanelRendered(false);
+		model.setSelectedStock(null);
+		model.setSelectedSymbol(null);
+		model.setTransformedCompanyList(null);
+		model.setTransformedExchangeList(null);
+		model.setTransformedStockList(null);
+		model.setTransformPanelRendered(false);
+		model.setUpdatedCompanyList(null);
+		model.setUpdatedStockList(null);
 	}
 	
 	

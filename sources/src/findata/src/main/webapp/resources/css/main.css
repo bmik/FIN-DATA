@@ -1,8 +1,7 @@
-body {
-	width:1000px;
-	margin: 0 auto;
+html, body {
 	color: #333;
 	font-size: 12px !important;
+	height:100%;
 }
 
 table {
@@ -11,15 +10,19 @@ table {
 
 
 /* PAGE LAYOUT */
-#header {
-	width: 100%;
-	background-image: url("#{resource['img/stock-transfer-banner.jpg']}");
-	height:100px;
-}
 
 #container {
 	position: relative;
+	width:1000px;
+	margin: 0 auto;
 	min-height: 100%;
+	height:auto !important;
+	height:100%;
+}
+
+#header {
+	background-image: url("#{resource['img/stock-transfer-banner.jpg']}");
+	height:100px;
 }
 
 #content {
@@ -29,6 +32,8 @@ table {
 }
 
 #footer {
+	position: absolute;
+	bottom: 30px;
 	width: 100%;
 	text-align: center;
 }
@@ -45,12 +50,11 @@ table {
 
 .buttons-container {
 	margin-bottom: 10px;
-	float: left;
 }
 
 .reset-button-panel {
 	margin-bottom: 10px;
-	float: right:
+	float: right;
 }
 
 .action-button {
