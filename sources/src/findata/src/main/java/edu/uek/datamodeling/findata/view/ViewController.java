@@ -29,24 +29,39 @@ import edu.uek.datamodeling.findata.model.findataimporter.model.FindataCompanyEx
 import edu.uek.datamodeling.findata.model.findataimporter.model.FindataExchangeEntityModel;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ViewController.
+ */
 @Controller("viewController")
 @Scope("prototype")
 public class ViewController implements Serializable {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5317413022036931996L;
 	
+	/** The Constant log. */
 	private static final Logger log = Logger.getLogger(ViewController.class);
 
+	/** The extract service. */
 	@Autowired
 	private ExtractService extractService;
+	
+	/** The transform service. */
 	@Autowired
 	private TransformService transformService;
+	
+	/** The load service. */
 	@Autowired
 	private LoadService loadService;
 	
+	/** The model. */
 	@Autowired
 	private ViewModel model;
 	
+	/**
+	 * Do etl.
+	 */
 	public void doETL() {
 		
 		log.info(String.format("Attempting to run ETL process..."));
@@ -112,6 +127,9 @@ public class ViewController implements Serializable {
 		
 	}
 
+	/**
+	 * Extract.
+	 */
 	public void extract() {
 		
 		log.info(String.format("Preparing to extract..."));
@@ -134,6 +152,9 @@ public class ViewController implements Serializable {
 		
 	}
 	
+	/**
+	 * Transform.
+	 */
 	public void transform() {
 		
 		log.info(String.format("Preparing to transform..."));
@@ -158,6 +179,9 @@ public class ViewController implements Serializable {
 		
 	}
 	
+	/**
+	 * Load.
+	 */
 	public void load() {
 		
 		log.info(String.format("Preparing to load..."));
@@ -185,6 +209,13 @@ public class ViewController implements Serializable {
 		
 	}
 	
+	/**
+	 * Gets the companies exchanges list.
+	 *
+	 * @param stockCode the stock code
+	 * @param symbol the symbol
+	 * @return the companies exchanges list
+	 */
 	public List<FindataCompanyExchangeModel> getCompaniesExchangesList(String stockCode, String symbol) {
 		
 		for (FindataExchangeEntityModel stock : model.getFindataEntityModelList()) {
@@ -202,6 +233,12 @@ public class ViewController implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * Gets the stock full name.
+	 *
+	 * @param stockCode the stock code
+	 * @return the stock full name
+	 */
 	public String getStockFullName(String stockCode) {
 		for (FindataExchangeEntityModel stock : model.getFindataEntityModelList()) {
 			if (stockCode.equals(stock.getStockCode())) {
@@ -211,6 +248,11 @@ public class ViewController implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * Gets the date.
+	 *
+	 * @return the date
+	 */
 	public String getDate() {
 		if (model.getFindataEntityModelList() != null) {
 			return model.getFindataEntityModelList().get(0).getDate();
@@ -218,14 +260,27 @@ public class ViewController implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * Sets the new stocks table rendered.
+	 *
+	 * @param isRendered the new new stocks table rendered
+	 */
 	public void setNewStocksTableRendered(boolean isRendered) {
 		model.setNewStocksTableRendered(isRendered);
 	}
 	
+	/**
+	 * Sets the new companies table rendered.
+	 *
+	 * @param isRendered the new new companies table rendered
+	 */
 	public void setNewCompaniesTableRendered(boolean isRendered) {
 		model.setNewCompaniesTableRendered(isRendered);
 	}
 	
+	/**
+	 * Reset.
+	 */
 	public void reset() {
 		model.setExchangeList(null);
 		model.setExtractPanelRendered(false);

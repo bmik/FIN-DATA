@@ -13,13 +13,22 @@ import edu.uek.datamodeling.findata.controller.service.ExtractService;
 import edu.uek.datamodeling.findata.model.findataimporter.FindataEntityExtractor;
 import edu.uek.datamodeling.findata.model.findataimporter.model.FindataExchangeEntityModel;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ExtractBean.
+ */
 @Service("extractService")
 public class ExtractBean implements ExtractService {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1592037509045427193L;
 	
+	/** The Constant log. */
 	private static final Logger log = Logger.getLogger(ExtractService.class);
 
+	/* (non-Javadoc)
+	 * @see edu.uek.datamodeling.findata.controller.service.ExtractService#doExtract(edu.uek.datamodeling.findata.controller.implementation.extract.request.ExtractRequest)
+	 */
 	@Override
 	public ExtractResponse doExtract(
 			ExtractRequest request) {
